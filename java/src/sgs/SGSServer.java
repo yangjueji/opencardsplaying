@@ -47,9 +47,13 @@ public class SGSServer {
 					
                     BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     PrintWriter pw = new PrintWriter(socket.getOutputStream());
-                    char[] buffer = new char[22];
-                    br.read(buffer,0,22);
-                    String head = new String(buffer);
+//                    char[] buffer = new char[22];
+//                    br.read(buffer,0,22);
+                    String head = br.readLine();
+                    System.out.println(head.equals("enter"));
+                    System.out.println(head);
+                    System.out.println(head.charAt(0));
+                    System.out.println(head.charAt(1));
                     //发送安全策略
                     if(head.equals("<policy-file-request/>"))
                     {
@@ -59,7 +63,7 @@ public class SGSServer {
                     	br.close();
                     }
                     //玩家进入房间，判断房间是否满了
-                    else if(head.equals("enter in")){
+                    else if(head.contains("enter")){
                     	System.out.println("entering");
                     	if(userNumber >= MAXUSERNUM){
                     		System.out.println("full");
@@ -70,9 +74,7 @@ public class SGSServer {
                     	else{
                     		System.out.println("can enter");
                     		userNumber ++;
-                    		char[] userNameBuffer = new char[40];
-                    		br.read(userNameBuffer,0,40);
-                    		String userName = new String(userNameBuffer);
+                    		String userName = br.readLine();
                     		int roomIndex = 0;
                     		for(;roomIndex < MAXUSERNUM;roomIndex ++){
                     			if(users[roomIndex] == null){
@@ -80,8 +82,7 @@ public class SGSServer {
                     				break;
                     			}
                     		}
-                    		pw.print("success");
-                    		pw.print(roomIndex);
+                    		pw.print("success," + roomIndex);
                     		pw.flush();
                     	}
                     	pw.close();
