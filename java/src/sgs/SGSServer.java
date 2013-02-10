@@ -25,7 +25,7 @@ public class SGSServer {
 	Map<String,Integer> userRoomIndex = new HashMap<String, Integer>();
 	
 	//flash的安全策略
-	final String xml = "<cross-domain-policy>"
+	String xml = "<cross-domain-policy>"
 				+ "<allow-access-from domain=\"*\" to-ports=\"2901,8888\" />"
     			+ "</cross-domain-policy>";
 	
@@ -47,23 +47,19 @@ public class SGSServer {
 					
                     BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     PrintWriter pw = new PrintWriter(socket.getOutputStream());
-//                    char[] buffer = new char[22];
-//                    br.read(buffer,0,22);
-                    String head = br.readLine();
-                    System.out.println(head.equals("enter"));
-                    System.out.println(head);
-                    System.out.println(head.charAt(0));
-                    System.out.println(head.charAt(1));
+                    char[] buffer = new char[256];
+                    br.read(buffer,0,256);
+                    String request = new String(buffer);
                     //发送安全策略
-                    if(head.equals("<policy-file-request/>"))
+                    if(request.startsWith("<policy-file-request/>"))
                     {
                     	pw.print(xml + "\0");
                     	pw.flush();
-                    	pw.close();
                     	br.close();
+                    	pw.close();
                     }
                     //玩家进入房间，判断房间是否满了
-                    else if(head.contains("enter")){
+                    else if(request.contains("enter")){
                     	System.out.println("entering");
                     	if(userNumber >= MAXUSERNUM){
                     		System.out.println("full");
@@ -74,7 +70,9 @@ public class SGSServer {
                     	else{
                     		System.out.println("can enter");
                     		userNumber ++;
-                    		String userName = br.readLine();
+                    		String splitStrs[] = request.split(",");
+                    		String userName = splitStrs[1];
+                    		userName = userName.trim();
                     		int roomIndex = 0;
                     		for(;roomIndex < MAXUSERNUM;roomIndex ++){
                     			if(users[roomIndex] == null){
@@ -89,7 +87,7 @@ public class SGSServer {
                     	br.close();
                     }
                     //开始游戏
-                    else if(head.equals("start game")){
+                    else if(request.equals("start")){
                     }
                     //下面的是测试用的
                     else{

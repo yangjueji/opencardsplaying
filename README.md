@@ -3,5 +3,7 @@ opencardsplaying
 flash和java用Socket通讯
 目前在做房间的进入。先限8人。
 TODO:
+显示其他玩家：
+fla第5帧增加一个socket，等待别的玩家进入。java则广播事件
 离线的检查：
 java的后台需要做定期的检查，socket.isConnected().然后清理房间中的空位
